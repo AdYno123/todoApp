@@ -1,0 +1,17 @@
+node_modules/
+/dist/
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build files
+build/
+out/
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+.cache/
