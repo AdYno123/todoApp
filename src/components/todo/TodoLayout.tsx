@@ -3,6 +3,7 @@ import { RadioGroup } from '@headlessui/react'
 import { IoMdCloudDone } from 'react-icons/io'
 import { ITodo } from '../../constants/models'
 import useApiCall, { HttpRequestType } from '../../constants/useApiCall'
+import moment from 'moment'
 import { toast } from 'react-toastify'
 
 interface IProps {
@@ -64,15 +65,18 @@ const TodoLayout: React.FC<IProps> = (props) => {
           <div className="text-sm grid grid-rows-3  w-full">
             <RadioGroup.Label
               as="p"
-              className={`font-medium text-gray-900 text-left`}>
+              className={`text-xl uppercase font-bold text-gray-900 text-left my-0`}>
               {props.todo.title}
             </RadioGroup.Label>
             <RadioGroup.Description
               as="span"
-              className={`inline text-gray-500`}>
-              <span>{props.todo.text}</span> <span>{props.todo.deadline}</span>
+              className={` text-gray-500 grid grid-cols-2 gap-4 mb-5 text-lg`}>
+              <p className="my-0 ">{props.todo.text}</p>{' '}
+              <p className="my-0">
+                {moment(props.todo.deadline).format('MMMM Do YYYY, h:mm:ss a')}
+              </p>
             </RadioGroup.Description>
-            <span className="w-full  grid-cols-3">
+            <span className="w-full grid grid-cols-2 gap-4">
               <button
                 className="rounded-sm px-3 mx-3 py-1 bg-red-600 text-red-100 hover:bg-red-700 duration-300 text-sm font-bold"
                 onClick={() => DeleteTodo(props.sectionId, +props.todo.id!)}>
@@ -87,12 +91,12 @@ const TodoLayout: React.FC<IProps> = (props) => {
                 onClick={() => SetIsDoneTodo(props.sectionId, props.todo)}>
                 {!props.todo.isDone ? 'Waiting' : 'Solved'}
               </button>
-              {props.todo.isDone && (
-                <span className="text-black">
-                  <IoMdCloudDone className="inline-block text-2xl" />
-                </span>
-              )}
             </span>
+            {props.todo.isDone && (
+              <span className="text-black">
+                <IoMdCloudDone className="inline-block text-2xl" />
+              </span>
+            )}
           </div>
         </div>
       </>

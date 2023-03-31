@@ -48,26 +48,26 @@ const TodoList: React.FC<IProps> = (props) => {
   }
 
   return (
-    <>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
       {props.sections.map((section, index) => (
         <div className="w-full px-4 py-16 text-white" key={index}>
-          <div className="mx-auto w-full max-w-md">
+          <div className="mx-auto w-full">
             <RadioGroup>
               <RadioGroup.Label as="h2" className="uppercase font-bold mb-1">
                 {section.title}{' '}
               </RadioGroup.Label>
-              <span className="mb-3">
+              <div className="mb-3 grid grid-cols-2 gap-4">
                 <button
-                  className="rounded-sm px-3 mx-3 py-0.5 bg-red-600 text-red-100 hover:bg-red-700 duration-300 text-sm font-bold"
+                  className="rounded-sm px-3 py-1 bg-red-600 text-red-100 hover:bg-red-700 duration-300 text-sm font-bold"
                   onClick={() => DeleteSection(section.id!)}>
                   Delete Section
                 </button>
                 <button
-                  className="rounded-sm px-3 mx-3 py-0.5  bg-green-600 text-green-100 hover:green-red-700 duration-300 text-sm font-bold"
+                  className="rounded-sm px-3  py-15 bg-green-600 text-green-100 hover:green-red-700 duration-300 text-sm font-bold"
                   onClick={() => openModal(section.id!)}>
                   ADD Todo
                 </button>
-              </span>
+              </div>
               {section.todos.length > 0 && (
                 <span>
                   <TodoFilter setFilterTitle={setFilterTitle} />
@@ -104,7 +104,7 @@ const TodoList: React.FC<IProps> = (props) => {
         sectionId={sectionId}
         LoadSection={props.LoadSection}
       />
-    </>
+    </div>
   )
 }
 

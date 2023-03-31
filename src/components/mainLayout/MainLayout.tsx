@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import React from 'react'
+import { Outlet } from 'react-router-dom'
 import TopAppBar from './menu/TopAppBar'
-
-const drawerWidth = 280
 
 interface IProps {
   window?: () => Window

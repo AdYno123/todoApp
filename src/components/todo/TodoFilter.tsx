@@ -18,12 +18,12 @@ export const TodoFilter: React.FC<IProps> = (props) => {
 
   return (
     <form
-      className="mb-4 md:flex md:flex-wrap md:justify-between"
+      className="mb-4 items-center w-full"
       onChange={handleSubmit(onSubmit)}>
-      <div className="flex flex-col mb-4 md:w-1/2">
+      <div className="flex flex-col mb-4">
         <input
           type="text"
-          className="border py-2 px-3 text-grey-darkest md:mr-2 text-black"
+          className="border py-2 px-3 text-grey-darkest  rounded-lg text-black"
           placeholder="Write something for filtering"
           {...register('title', { required: true, maxLength: 80 })}
         />

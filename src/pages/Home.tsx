@@ -9,7 +9,7 @@ interface IProps {
 }
 const Home: React.FC<IProps> = (props) => {
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="md:container md:mx-auto">
       <h1 className="text-3xl font-bold text-gray-900">rerender</h1>
       <TodoSectionForm LoadSection={props.LoadData} />
       <TodoSectionList LoadSection={props.LoadData} sections={props.sections} />

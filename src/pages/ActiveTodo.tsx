@@ -9,7 +9,7 @@ interface IProps {
 }
 const ActiveTodo: React.FC<IProps> = (props) => {
   return (
-    <>
+    <div className="container mx-auto">
       {props.sections.map((section, index) => (
         <RadioGroup key={index} className="my-5">
           <RadioGroup.Label
@@ -31,7 +31,7 @@ const ActiveTodo: React.FC<IProps> = (props) => {
             ))}
         </RadioGroup>
       ))}
-    </>
+    </div>
   )
 }
 
