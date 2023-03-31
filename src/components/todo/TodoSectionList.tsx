@@ -1,32 +1,110 @@
-import React, { useEffect } from 'react'
-import { ISections } from '../../constants/models'
-import useApiCall from '../../constants/useApiCall'
+import React, { useEffect, useState } from 'react'
+import { ISections, ITodo } from '../../constants/models'
+import useApiCall, { HttpRequestType } from '../../constants/useApiCall'
+import { RadioGroup } from '@headlessui/react'
+import { toast } from 'react-toastify'
+import { TodoForm } from './TodoForm'
+import TodoLayout from './TodoLayout'
+import { TodoFilter } from './TodoFilter'
 
-interface IProps {}
+interface IProps {
+  sections: ISections[]
+  LoadSection: () => void
+}
 
 const TodoList: React.FC<IProps> = (props) => {
-  // const { response, error, isLoading } = useApiCall<ISections>(
-  //   'https://6422c5ba001cb9fc202f6433.mockapi.io/api/sections',
-  // )
+  const httpProvider = useApiCall()
 
-  // useEffect(() => {
-  //   console.log(response)
-  // }, [response, error])
+  let [isOpen, setIsOpen] = useState<boolean>(false)
+  const [sectionId, setSectionId] = useState<number>(0)
+  const [filterTitle, setFilterTitle] = useState<string>('')
+
+  function closeModal() {
+    setIsOpen(false)
+  }
+
+  function openModal(sectionId: number) {
+    setSectionId(sectionId)
+    setIsOpen(true)
+  }
+  /**
+   * Delete section base on ID
+   * @param sectionId ID of section on delete
+   */
+  const DeleteSection = (sectionId: number) => {
+    httpProvider
+      .sendRequest<ISections[]>(
+        `/sections/${sectionId}`,
+        HttpRequestType.Delete,
+      )
+      .then((responseData) => {
+        if (responseData.success === true && responseData.data) {
+          props.LoadSection()
+          toast.success('Section was deleted successfully')
+        } else {
+          toast.error('Failed to delete section')
+        }
+      })
+  }
 
   return (
-    <ul className="mt-4 space-y-2">
-      {/* {props.sections.map((todo, index) => (
-        <li
-          key={todo.id}
-          className="bg-white shadow overflow-hidden sm:rounded-md">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              {todo.sectionTitle}
-            </h3>
+    <>
+      {props.sections.map((section, index) => (
+        <div className="w-full px-4 py-16 text-white" key={index}>
+          <div className="mx-auto w-full max-w-md">
+            <RadioGroup>
+              <RadioGroup.Label as="h2" className="uppercase font-bold mb-1">
+                {section.title}{' '}
+              </RadioGroup.Label>
+              <span className="mb-3">
+                <button
+                  className="rounded-sm px-3 mx-3 py-0.5 bg-red-600 text-red-100 hover:bg-red-700 duration-300 text-sm font-bold"
+                  onClick={() => DeleteSection(section.id!)}>
+                  Delete Section
+                </button>
+                <button
+                  className="rounded-sm px-3 mx-3 py-0.5  bg-green-600 text-green-100 hover:green-red-700 duration-300 text-sm font-bold"
+                  onClick={() => openModal(section.id!)}>
+                  ADD Todo
+                </button>
+              </span>
+              {section.todos.length > 0 && (
+                <span>
+                  <TodoFilter setFilterTitle={setFilterTitle} />
+                </span>
+              )}
+              <div className="space-y-2 mt-3">
+                {filterTitle
+                  ? section.todos
+                      .filter((row) => row.title === filterTitle)
+                      .map((todo) => (
+                        <TodoLayout
+                          key={todo.id}
+                          todo={todo}
+                          sectionId={section.id!}
+                          LoadSection={props.LoadSection}
+                        />
+                      ))
+                  : section.todos.map((todo, index) => (
+                      <TodoLayout
+                        key={index}
+                        todo={todo}
+                        sectionId={section.id!}
+                        LoadSection={props.LoadSection}
+                      />
+                    ))}
+              </div>
+            </RadioGroup>
           </div>
-        </li>
-      ))} */}
-    </ul>
+        </div>
+      ))}
+      <TodoForm
+        closeModal={closeModal}
+        isOpen={isOpen}
+        sectionId={sectionId}
+        LoadSection={props.LoadSection}
+      />
+    </>
   )
 }
 

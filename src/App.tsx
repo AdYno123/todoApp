@@ -1,16 +1,39 @@
-import { ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 import './App.css'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import MainLayout from './components/mainLayout/MainLayout'
 import Home from './pages/Home'
-import About from './pages/About'
-import Info from './pages/Info'
+
+import 'react-toastify/dist/ReactToastify.css'
+import useApiCall, { HttpRequestType } from './constants/useApiCall'
+import { ISections } from './constants/models'
+import DeactiveTodo from './pages/DeactiveTodo'
+import ActiveTodo from './pages/ActiveTodo'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [sections, setSections] = useState<ISections[]>([])
+  const httpProvider = useApiCall()
 
+  useEffect(() => {
+    LoadData()
+  }, [])
+
+  /**
+   * load section data
+   */
+  const LoadData = () => {
+    httpProvider
+      .sendRequest<ISections[]>('/sections', HttpRequestType.Get)
+      .then((responseData) => {
+        if (responseData.success === true && responseData.data) {
+          setSections(responseData.data)
+        } else {
+          toast.error('Data was not loaded')
+        }
+      })
+  }
   return (
     <div className="App" data-testid="app-page">
       <ToastContainer
@@ -27,9 +50,18 @@ function App() {
       />
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="info" element={<Info />} />
+          <Route
+            path="/"
+            element={<Home LoadData={LoadData} sections={sections} />}
+          />
+          <Route
+            path="deactiveTodo"
+            element={<DeactiveTodo LoadData={LoadData} sections={sections} />}
+          />
+          <Route
+            path="activeTodo"
+            element={<ActiveTodo LoadData={LoadData} sections={sections} />}
+          />
         </Route>
       </Routes>
     </div>

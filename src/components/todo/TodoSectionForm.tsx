@@ -1,18 +1,23 @@
 import React from 'react'
 import { Resolver, SubmitHandler, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import { ISections } from '../../constants/models'
+import useApiCall, { HttpRequestType } from '../../constants/useApiCall'
 
 interface IProps {
-  // user: UserInfo | undefined;
-  setSections: (param: ISections[]) => void
+  LoadSection: () => void
 }
-
+/**
+ * resolver
+ * @param values
+ * @returns
+ */
 const resolver: Resolver<ISections> = async (values) => {
   return {
-    values: values.sectionTitle ? values : {},
-    errors: !values.sectionTitle
+    values: values.title ? values : {},
+    errors: !values.title
       ? {
-          sectionTitle: {
+          title: {
             type: 'required',
             message: 'This is required.',
           },
@@ -27,18 +32,55 @@ export const TodoSectionForm: React.FC<IProps> = (props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<ISections>({ resolver })
-  const onSubmit: SubmitHandler<ISections> = (data) => {}
+  const httpProvider = useApiCall()
+
+  /**
+   * load section data
+   */
+  const AddSection = (sectionTitle: string) => {
+    let newSection: ISections = {
+      title: sectionTitle,
+      todos: [],
+    }
+    httpProvider
+      .sendRequest<ISections[]>('/sections', HttpRequestType.Post, newSection)
+      .then((responseData) => {
+        if (responseData.success === true && responseData.data) {
+          props.LoadSection()
+          toast.success('Section was add successfully')
+        } else {
+          toast.error('Data was not loaded')
+        }
+      })
+  }
+
+  const onSubmit: SubmitHandler<ISections> = (data) => {
+    AddSection(data.title)
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        type="text"
-        placeholder="Section Title"
-        {...register('sectionTitle', { required: true, maxLength: 80 })}
-      />
-      {errors?.sectionTitle && <p>{errors.sectionTitle.message}</p>}
-
-      <input type="submit" />
-    </form>
+    <div className="flex items-center  w-full bg-teal-lighter">
+      <div className="w-full bg-white rounded shadow-lg p-8 m-4 md:max-w-sm md:mx-auto">
+        <form
+          className="mb-4 md:flex md:flex-wrap md:justify-between"
+          onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col mb-4 md:w-1/2">
+            <label className="mb-2 uppercase tracking-wide font-bold text-lg text-grey-darkest">
+              Add TODO Section
+            </label>
+            <input
+              type="text"
+              className="border py-2 px-3 text-grey-darkest md:mr-2"
+              placeholder="Section Title"
+              {...register('title', { required: true, maxLength: 80 })}
+            />
+          </div>
+          <input
+            type="submit"
+            className="block bg-black hover:bg-teal-dark text-white uppercase text-lg mx-auto p-4 rounded"
+          />
+        </form>
+      </div>
+    </div>
   )
 }

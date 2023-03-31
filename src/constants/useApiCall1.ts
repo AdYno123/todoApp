@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 type ApiResponse<T> = {
@@ -9,7 +9,7 @@ type ApiResponse<T> = {
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
-const useApiCall = <T>(
+const useApiCalls = <T>(
   url: string,
   method: HttpMethod = 'GET',
   data: AxiosRequestConfig['data'] = null,
@@ -27,42 +27,28 @@ const useApiCall = <T>(
     [url],
   )
 
+  const fetchData = async () => {
+    try {
+      const result: AxiosResponse<T> = await axiosInstance({
+        method,
+        url,
+        data,
+        headers,
+      })
+
+      setResponse(result.data)
+    } catch (err: any) {
+      setError(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
-    console.log('first')
-    let unmounted = false
-
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const result: AxiosResponse<T> = await axiosInstance({
-          method,
-          url,
-          data,
-          headers,
-        })
-
-        if (!unmounted) {
-          setResponse(result.data)
-        }
-      } catch (error: any) {
-        if (!unmounted) {
-          setError(error)
-        }
-      } finally {
-        if (!unmounted) {
-          setIsLoading(false)
-        }
-      }
-    }
-
     fetchData()
-
-    return () => {
-      unmounted = true
-    }
-  }, [axiosInstance, method, url, data, headers])
+  }, [])
 
   return { response, error, isLoading }
 }
 
-export default useApiCall
+export default useApiCalls
